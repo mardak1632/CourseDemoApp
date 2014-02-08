@@ -172,7 +172,8 @@ public class RegisterDialog extends javax.swing.JDialog {
             if(kayitBulundu == true){
                 JOptionPane.showMessageDialog(null, "Bu tckn kullanımda");
             } else {
-                //kayitTamamla();
+                kaydet();
+                JOptionPane.showMessageDialog(null, "Kayıt tamamlandı");
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -238,6 +239,14 @@ public class RegisterDialog extends javax.swing.JDialog {
             Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            if(con != null){
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         return updateCount;
     }
