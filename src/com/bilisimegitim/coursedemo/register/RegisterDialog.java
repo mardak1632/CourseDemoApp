@@ -7,6 +7,7 @@
 package com.bilisimegitim.coursedemo.register;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -212,6 +213,33 @@ public class RegisterDialog extends javax.swing.JDialog {
             }
         }
         return kayitBulundu;
+    }
+    
+    private int kaydet(){
+        Connection con = null;
+        int updateCount = -1;       
+        try {
+            Date date = new Date(jDateChooser1.getDate().getTime());
+            String sifre = new String(jPasswordField1.getPassword());
+            
+            String insertSql = "insert into kullanici (kullanici_ad,kullanici_soyad,cinsiyet,dogum_tarihi,tckn,sifre) values (?,?,?,?,?,?)";
+            
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/adem?zeroDateTimeBehavior=convertToNull","root","");
+            PreparedStatement pstmt = con.prepareStatement(insertSql);
+            pstmt.setString(1, jTextField1.getText().trim());
+            pstmt.setString(2, jTextField2.getText().trim());
+            pstmt.setString(3, jComboBox1.getSelectedItem().toString());
+            pstmt.setDate(4, date);
+            pstmt.setString(5, jTextField3.getText().trim());
+            pstmt.setString(6, sifre);
+            updateCount = pstmt.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return updateCount;
     }
     
     /**
