@@ -8,6 +8,7 @@ package com.bilisimegitim.coursedemo.register;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -189,9 +190,10 @@ public class RegisterDialog extends javax.swing.JDialog {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/adem?zeroDateTimeBehavior=convertToNull","root","");
-            Statement stmt = con.createStatement();
-            String sqlStr = "select * from kullanici where tckn='" + tckn + "'";
-            ResultSet rs = stmt.executeQuery(sqlStr);
+            String sqlStr = "select * from kullanici where tckn=? ";
+            PreparedStatement pstmt = con.prepareStatement(sqlStr);
+            pstmt.setString(1, tckn);
+            ResultSet rs = pstmt.executeQuery();
             if(rs.next()){
                 kayitBulundu = true;
             }
