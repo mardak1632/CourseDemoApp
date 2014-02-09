@@ -3,11 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.bilisimegitim.coursedemo.entrypoint;
 
 import com.bilisimegitim.coursedemo.main.MainForm;
 import com.bilisimegitim.coursedemo.register.RegisterDialog;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -46,9 +52,9 @@ public class GirisForm extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bilisimegitim/coursedemo/resource/person.png"))); // NOI18N
 
-        jLabel2.setText("User name :");
+        jLabel2.setText("Tckn:");
 
-        jLabel3.setText("Password : ");
+        jLabel3.setText("Sifre : ");
 
         jButton1.setText("Register");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -83,7 +89,7 @@ public class GirisForm extends javax.swing.JFrame {
                                 .addComponent(jButton2))
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 119, Short.MAX_VALUE))
+                        .addGap(0, 145, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -121,31 +127,61 @@ public class GirisForm extends javax.swing.JFrame {
         girisKontrol();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void girisKontrol(){
-        String userName = jTextField1.getText().trim();
-        String password = new String(jPasswordField1.getPassword());
-        if(userName.equals("")){
-            JOptionPane.showMessageDialog(this, "Lütfen kullanıcı adını boş bırakmayınız.");
+    private void girisKontrol() {
+        String tckn = jTextField1.getText().trim();
+        String sifre = new String(jPasswordField1.getPassword());
+        if (tckn.equals("")) {
+            JOptionPane.showMessageDialog(this, "Lütfen tckn'yi boş bırakmayınız.");
             return;
         }
-        if(password.trim().equals("")){
+        if (sifre.trim().equals("")) {
             JOptionPane.showMessageDialog(this, "Lütfen şifreyi boş bırakmayınız.");
             return;
         }
-        if(!userName.equals("Adem")){
-            JOptionPane.showMessageDialog(this, "Kullanıcı adı yanlış");
-            return;
-        }
-        if(!password.equals("55555")){
-            JOptionPane.showMessageDialog(this, "Şifre yanlış");
-            return;
-        }
        
+       
+        Connection con = null;
+        try {
+            String sqlStr = "select sifre from kullanici where tckn=? ";
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/arda?zeroDateTimeBehavior=convertToNull", "root", "");
+            PreparedStatement pstmt = con.prepareStatement(sqlStr);
+            pstmt.setString(1, tckn);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String dbsifre=rs.getString("sifre");
+                if(dbsifre.equals(sifre)){
+                   new MainForm().setVisible(true); 
+                }
+            }
+        } catch (SQLException ex) {
+            try {
+                throw new Exception("Sql hatası oluştu");
+            } catch (Exception ex1) {
+                Logger.getLogger(GirisForm.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } catch (ClassNotFoundException ex) {
+            try {
+                throw new Exception("Driver bulunamadı");
+            } catch (Exception ex1) {
+                Logger.getLogger(GirisForm.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
         
-        new MainForm().setVisible(true); 
+        
         //String date = DateUtil.dateToStr(new Date(), "dd/MM/yyyy");
     }
+
     
+
     /**
      * @param args the command line arguments
      */

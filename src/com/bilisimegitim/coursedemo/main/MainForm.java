@@ -7,7 +7,6 @@
 package com.bilisimegitim.coursedemo.main;
 
 import com.bilisimegitim.coursedemo.register.RegisterDialog;
-
 /**
  *
  * @author Adem
@@ -434,6 +433,8 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
     }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

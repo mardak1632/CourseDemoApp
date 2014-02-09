@@ -41,7 +41,7 @@
                           <Component id="jTextField1" alignment="0" min="-2" pref="132" max="-2" attributes="0"/>
                           <Component id="jPasswordField1" min="-2" pref="132" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="119" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="145" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
@@ -88,12 +88,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="User name :"/>
+        <Property name="text" type="java.lang.String" value="Tckn:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Password : "/>
+        <Property name="text" type="java.lang.String" value="Sifre : "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField1">

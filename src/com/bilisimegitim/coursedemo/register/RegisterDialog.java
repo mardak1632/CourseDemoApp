@@ -48,7 +48,6 @@ public class RegisterDialog extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jLabel5 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
@@ -56,7 +55,6 @@ public class RegisterDialog extends javax.swing.JDialog {
         jPasswordField1 = new javax.swing.JPasswordField();
         jPasswordField2 = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Kayıt");
@@ -71,8 +69,6 @@ public class RegisterDialog extends javax.swing.JDialog {
 
         jLabel4.setText("Doğum Tarihi");
 
-        jDateChooser1.setDateFormatString("dd/MM/yyyy");
-
         jLabel5.setText("Tckn : ");
 
         jLabel6.setText("Şifre :");
@@ -86,13 +82,6 @@ public class RegisterDialog extends javax.swing.JDialog {
             }
         });
 
-        jButton2.setText("Oku");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -100,10 +89,7 @@ public class RegisterDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
+                    .addComponent(jButton1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
@@ -117,8 +103,7 @@ public class RegisterDialog extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTextField1)
                             .addComponent(jTextField2)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                            .addComponent(jComboBox1, 0, 125, Short.MAX_VALUE)
                             .addComponent(jTextField3)
                             .addComponent(jPasswordField1)
                             .addComponent(jPasswordField2))))
@@ -140,9 +125,7 @@ public class RegisterDialog extends javax.swing.JDialog {
                     .addComponent(jLabel3)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -156,9 +139,7 @@ public class RegisterDialog extends javax.swing.JDialog {
                     .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -181,17 +162,13 @@ public class RegisterDialog extends javax.swing.JDialog {
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     
     private boolean kayitKontrol(String tckn) throws Exception{
         boolean kayitBulundu = false;
         Connection con = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/adem?zeroDateTimeBehavior=convertToNull","root","");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/arda?zeroDateTimeBehavior=convertToNull","root","");
             String sqlStr = "select * from kullanici where tckn=? ";
             PreparedStatement pstmt = con.prepareStatement(sqlStr);
             pstmt.setString(1, tckn);
@@ -216,7 +193,7 @@ public class RegisterDialog extends javax.swing.JDialog {
         return kayitBulundu;
     }
     
-    private int kaydet(){
+    private int kaydet() throws Exception{
         Connection con = null;
         int updateCount = -1;       
         try {
@@ -226,11 +203,11 @@ public class RegisterDialog extends javax.swing.JDialog {
             String insertSql = "insert into kullanici (kullanici_ad,kullanici_soyad,cinsiyet,dogum_tarihi,tckn,sifre) values (?,?,?,?,?,?)";
             
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/adem?zeroDateTimeBehavior=convertToNull","root","");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/arda?zeroDateTimeBehavior=convertToNull","root","");
             PreparedStatement pstmt = con.prepareStatement(insertSql);
             pstmt.setString(1, jTextField1.getText().trim());
             pstmt.setString(2, jTextField2.getText().trim());
-            pstmt.setString(3, jComboBox1.getSelectedItem().toString());
+            pstmt.setString(3, jComboBox1.getSelectedItem().toString().substring(0, 1));
             pstmt.setDate(4, date);
             pstmt.setString(5, jTextField3.getText().trim());
             pstmt.setString(6, sifre);
@@ -295,9 +272,7 @@ public class RegisterDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
