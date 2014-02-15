@@ -197,7 +197,7 @@ public class RegisterDialog extends javax.swing.JDialog {
         Connection con = null;
         int updateCount = -1;       
         try {
-            Date date = new Date(jDateChooser1.getDate().getTime());
+            //Date date = new Date(jDateChooser1.getDate().getTime());
             String sifre = new String(jPasswordField1.getPassword());
             
             String insertSql = "insert into kullanici (kullanici_ad,kullanici_soyad,cinsiyet,dogum_tarihi,tckn,sifre) values (?,?,?,?,?,?)";
@@ -208,7 +208,7 @@ public class RegisterDialog extends javax.swing.JDialog {
             pstmt.setString(1, jTextField1.getText().trim());
             pstmt.setString(2, jTextField2.getText().trim());
             pstmt.setString(3, jComboBox1.getSelectedItem().toString().substring(0, 1));
-            pstmt.setDate(4, date);
+            //pstmt.setDate(4, date);
             pstmt.setString(5, jTextField3.getText().trim());
             pstmt.setString(6, sifre);
             updateCount = pstmt.executeUpdate();
