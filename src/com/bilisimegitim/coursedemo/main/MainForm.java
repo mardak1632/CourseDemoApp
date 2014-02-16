@@ -6,6 +6,7 @@
 package com.bilisimegitim.coursedemo.main;
 
 import com.bilisimegitim.coursedemo.register.RegisterDialog;
+import com.bilisimegitim.coursedemo.util.CRMUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,12 +14,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.TableModel;
 
 /**
  *
  * @author Adem
  */
 public class MainForm extends javax.swing.JFrame {
+
+    private int musteriId;
 
     /**
      * Creates new form MainForm
@@ -283,7 +287,7 @@ public class MainForm extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Tarih", "Görüşen Kişi", "Özet", "Durum"
+                "Tarih", "Görüşen Kişi", "Konu", "Detay"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
@@ -314,12 +318,18 @@ public class MainForm extends javax.swing.JFrame {
         jLabel15.setText("Detay :");
 
         jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
         jButton2.setText("Temizle");
 
         jButton3.setText("Kaydet");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -413,19 +423,28 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            String tckn = jTextField1.getText().trim();
-            Sorgula(tckn);
+            //String tckn = jTextField1.getText().trim();//parametreli metod tanımlarsak kullanmak için
+            Sorgula();
+            MusteriBilgileriSorgula();
         } catch (Exception ex) {
             Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void Sorgula(String tckn) throws Exception {
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            DetayKaydet();
+            MusteriBilgileriSorgula();
+        } catch (Exception ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void Sorgula() throws Exception {
+        String tckn = jTextField1.getText().trim();
         Connection con = null;
         try {
-            String sqlStr = "select a.musteri_ad,a.musteri_soyad,a.cinsiyet,a.dogum_tarihi, "
+            String sqlStr = "select a.musteri_id,a.musteri_ad,a.musteri_soyad,a.cinsiyet,a.dogum_tarihi, "
                     + " b.telefon_no,b.gsm,b.il,b.ilce,b.mahalle,b.cadde,b.sokak,b.kapi_no  "
                     + " from musteri a,musteri_iletisim b "
                     + " where a.musteri_id=b.musteri_id and a.tckn=?";
@@ -435,6 +454,7 @@ public class MainForm extends javax.swing.JFrame {
             pstmt.setString(1, tckn);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
+                musteriId=rs.getInt("musteri_id");
                 jTextField2.setText(rs.getString("musteri_ad"));
                 jTextField3.setText(rs.getString("musteri_soyad"));
                 if (rs.getString("cinsiyet").equals("E")) {
@@ -469,6 +489,66 @@ public class MainForm extends javax.swing.JFrame {
 
     }
 
+    private void DetayKaydet() {
+        Connection con = null;
+         try {
+            java.sql.Date date = new java.sql.Date(new java.util.Date().getTime());
+
+            String insertSql = "insert into onceki_arama_bilgileri(musteri_id,tarih,konu,detay) values (?,?,?,?)";
+
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/arda?zeroDateTimeBehavior=convertToNull", "root", "");
+            PreparedStatement pstmt = con.prepareStatement(insertSql);
+            pstmt.setInt(1,musteriId);
+            pstmt.setDate(2, date);
+            pstmt.setString(3, jTextField14.getText().trim());
+            pstmt.setString(4, jTextArea1.getText().trim());
+            pstmt.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+    }
+    private void MusteriBilgileriSorgula() throws Exception {
+        String tckn = jTextField1.getText().trim();
+        Connection con = null;
+        try {
+            String sqlStr = "select a.arama_id 'sıra no',a.tarih,a.konu,a.detay from onceki_arama_bilgileri a,musteri b"
+                    + " where a.musteri_id=b.musteri_id and b.tckn=?";
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/arda?zeroDateTimeBehavior=convertToNull", "root", "");
+            PreparedStatement pstmt = con.prepareStatement(sqlStr);
+            pstmt.setString(1, tckn);
+            ResultSet rs = pstmt.executeQuery();
+            TableModel model = CRMUtil.convertToTableModel(rs);
+            jTable2.setModel(model);
+
+        } catch (SQLException ex) {
+            throw new Exception("Sql hatası oluştu");
+        } catch (ClassNotFoundException ex) {
+            throw new Exception("Driver bulunamadı");
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(RegisterDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -483,16 +563,21 @@ public class MainForm extends javax.swing.JFrame {
                 if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
